@@ -1,1 +1,10 @@
-spring.application.name=FlowMind
+spring:
+  application:
+    name: FlowMind
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+server:
+  port: 8080
