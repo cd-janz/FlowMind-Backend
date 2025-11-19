@@ -1,41 +1,28 @@
 package com.linkedreams.flowmind.infrastructure.entities.R2DBC;
 
-import com.linkedreams.flowmind.infrastructure.utils.GenerationUtil;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.UUID;
 
 @Table("users")
 @Getter
-@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class UserEntity {
     @Id
     private UUID id;
+    @Column("first_name")
     private String firstName;
+    @Column("last_name")
     private String lastName;
     private String email;
     private String password;
     private String username;
+    @Column("phone_number")
     private String phoneNumber;
-    public UserEntity(String firstName, String lastName, String email, String password, String phoneNumber) {
-        this.id = UUID.randomUUID();
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password;
-        this.username = firstName.split(" ")[0] + GenerationUtil.generateCode(8);
-        this.phoneNumber = phoneNumber;
-    }
-    public UserEntity(String firstName, String lastName, String email, String password) {
-        this.id = UUID.randomUUID();
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password;
-        this.username = firstName.split(" ")[0] + GenerationUtil.generateCode(8);
-    }
 }

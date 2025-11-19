@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: FlowMind
+  r2dbc:
+    name: flowmind
+    password: postgres
+    username: admin
+    url: r2dbc:postgresql://localhost:5432/flowmind
+  rabbitmq:
+    username: admin
+    password: rabbitmq
+    port: 5672
+    host: localhost
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: ""
+      client-type: lettuce
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+server:
+  port: 8080
+springdoc:
+  api-docs:
+    enabled: true
+  show-actuator: false

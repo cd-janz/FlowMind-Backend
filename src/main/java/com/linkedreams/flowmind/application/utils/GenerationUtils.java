@@ -1,10 +1,8 @@
-package com.linkedreams.flowmind.infrastructure.utils;
-
-import org.springframework.stereotype.Service;
+package com.linkedreams.flowmind.application.utils;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class GenerationUtil {
+public class GenerationUtils {
     public static String generateCode(Integer length) {
         StringBuilder sb = new StringBuilder(length);
         ThreadLocalRandom random = ThreadLocalRandom.current();
