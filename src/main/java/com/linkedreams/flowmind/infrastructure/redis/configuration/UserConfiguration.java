@@ -1,8 +1,9 @@
-package com.linkedreams.flowmind.infrastructure.entities.redis.configuration;
+package com.linkedreams.flowmind.infrastructure.redis.configuration;
 
-import com.linkedreams.flowmind.infrastructure.entities.redis.User;
+import com.linkedreams.flowmind.infrastructure.redis.User;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.data.redis.core.ReactiveRedisOperations;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
@@ -22,5 +23,14 @@ public class UserConfiguration {
         RedisSerializationContext<String, User> context = builder.value(serializer).build();
 
         return new ReactiveRedisTemplate<>(factory, context);
+    }
+
+    @Bean("indexOps")
+    @Primary
+    ReactiveRedisOperations<String, String> stringRedisOps(ReactiveRedisConnectionFactory factory) {
+        return new ReactiveRedisTemplate<>(factory, RedisSerializationContext
+                .<String, String>newSerializationContext(new StringRedisSerializer())
+                .value(new StringRedisSerializer())
+                .build());
     }
 }

@@ -1,8 +1,8 @@
 package com.linkedreams.flowmind.infrastructure.mappers;
 
 import com.linkedreams.flowmind.infrastructure.dto.CreateUserDTO;
-import com.linkedreams.flowmind.infrastructure.entities.R2DBC.UserEntity;
-import com.linkedreams.flowmind.infrastructure.entities.redis.User;
+import com.linkedreams.flowmind.infrastructure.R2DBC.UserEntity;
+import com.linkedreams.flowmind.infrastructure.redis.User;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,7 +18,7 @@ public class UserMapper {
                 user.getPhoneNumber()
         );
     }
-    public UserEntity toEntity(CreateUserDTO user, String encryptedPassword){
+    public UserEntity toEntity(CreateUserDTO user, String encryptedPassword, Integer roleId){
         return new UserEntity(
                 null,
                 user.firstName(),
@@ -26,7 +26,11 @@ public class UserMapper {
                 user.email(),
                 encryptedPassword,
                 user.username(),
-                user.phoneNumber()
+                user.phoneNumber(),
+                null,
+                roleId,
+                null,
+                null
         );
     }
 }
