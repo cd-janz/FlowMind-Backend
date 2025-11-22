@@ -1,4 +1,4 @@
-package com.linkedreams.flowmind.application.ports.driving;
+package com.linkedreams.flowmind.application.services;
 
 import com.linkedreams.flowmind.infrastructure.dto.CreateUserDTO;
 import com.linkedreams.flowmind.infrastructure.dto.LoginUserDTO;

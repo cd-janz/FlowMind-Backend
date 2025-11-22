@@ -1,6 +1,6 @@
 package com.linkedreams.flowmind.infrastructure.controller;
 
-import com.linkedreams.flowmind.application.ports.driving.UserServices;
+import com.linkedreams.flowmind.application.services.UserServices;
 import com.linkedreams.flowmind.infrastructure.dto.CreateUserDTO;
 import com.linkedreams.flowmind.infrastructure.dto.LoginUserDTO;
 import com.linkedreams.flowmind.infrastructure.models.Response;
