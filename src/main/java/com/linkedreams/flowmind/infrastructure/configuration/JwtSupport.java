@@ -31,11 +31,11 @@ public class JwtSupport {
         return Mono.just(parser.parseSignedClaims(token.getValue()).getPayload().getSubject());
     }
 
-    public Mono<Boolean> isTokenExpired(BearerToken token){
-        return Mono.just(parser.parseSignedClaims(token.getValue())
+    public Boolean isTokenExpired(BearerToken token){
+        return parser.parseSignedClaims(token.getValue())
                         .getPayload()
                         .getExpiration()
-                        .before(Date.from(Instant.now())));
+                        .before(Date.from(Instant.now()));
     }
 
 }

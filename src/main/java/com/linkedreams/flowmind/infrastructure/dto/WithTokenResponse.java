@@ -1,4 +1,6 @@
 package com.linkedreams.flowmind.infrastructure.dto;
 
-public class WithTokenResponse {
-}
+public record WithTokenResponse(
+        String token,
+        BasicUserResponse user
+) { }

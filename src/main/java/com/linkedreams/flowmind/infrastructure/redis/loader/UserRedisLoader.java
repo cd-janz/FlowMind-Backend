@@ -40,14 +40,14 @@ public class UserRedisLoader {
         factory.getReactiveConnection()
                 .serverCommands()
                 .flushAll()
-                .thenMany(userRepository.findAll())
+                .thenMany(userRepository.findUsersWithRole())
                 .flatMap(user -> {
-
-                    String userId = user.getId().toString();
+                    System.out.println(user.toString());
+                    String userId = user.id().toString();
                     User redisUser = userMapper.toRedis(user);
 
                     Mono<Boolean> saveUser = userValues.set("user:" + userId, redisUser);
-                    Mono<Boolean> saveIndex = indexValues.set("email:" + user.getEmail(), userId);
+                    Mono<Boolean> saveIndex = indexValues.set("email:" + user.email(), userId);
 
                     return Mono.when(saveUser, saveIndex);
                 })

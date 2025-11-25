@@ -6,9 +6,11 @@ import jakarta.validation.constraints.*;
 public record CreateUserDTO(
         @NotBlank(message = "The user first name cannot be empty")
         String firstName,
-        @NotBlank(message = "The user last name cannot be empty") String lastName,
+        @NotBlank(message = "The user last name cannot be empty")
+        String lastName,
         @NotBlank(message = "The user email cannot be empty")
-        @Email(message = "The field email don't looks like an email") String email,
+        @Email(message = "The field email don't looks like an email")
+        String email,
         @Size(min = 8, max = 32, message = "The password length must be between 8 and 32 characters")
         String password,
         @Schema(description = "Optional phone number", nullable = true)

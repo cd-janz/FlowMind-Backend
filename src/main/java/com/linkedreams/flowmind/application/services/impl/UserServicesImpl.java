@@ -4,12 +4,17 @@ import com.linkedreams.flowmind.application.services.UserServices;
 import com.linkedreams.flowmind.application.utils.EncryptionUtils;
 import com.linkedreams.flowmind.application.utils.ValidationUtils;
 import com.linkedreams.flowmind.infrastructure.R2DBC.RoleEntity;
+import com.linkedreams.flowmind.infrastructure.configuration.JwtSupport;
+import com.linkedreams.flowmind.infrastructure.dto.BasicUserResponse;
 import com.linkedreams.flowmind.infrastructure.dto.CreateUserDTO;
 import com.linkedreams.flowmind.infrastructure.dto.LoginUserDTO;
+import com.linkedreams.flowmind.infrastructure.dto.WithTokenResponse;
+import com.linkedreams.flowmind.infrastructure.models.BearerToken;
 import com.linkedreams.flowmind.infrastructure.redis.User;
 import com.linkedreams.flowmind.infrastructure.mappers.UserMapper;
 import com.linkedreams.flowmind.infrastructure.repositories.RoleRepository;
 import com.linkedreams.flowmind.infrastructure.repositories.UserRepository;
+import lombok.With;
 import org.springframework.data.redis.core.ReactiveRedisOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -24,16 +29,19 @@ public class UserServicesImpl implements UserServices {
     private final ReactiveRedisOperations<String, User> userOps;
     private final ReactiveRedisOperations<String, String> indexOps;
     private final UserMapper userMapper;
+    private final JwtSupport jwt;
 
     public UserServicesImpl(
             UserRepository userRepository, ReactiveRedisOperations<String, User> userOps, UserMapper userMapper,
-            ReactiveRedisOperations<String, String> indexOps, RoleRepository roleRepository
+            ReactiveRedisOperations<String, String> indexOps, RoleRepository roleRepository,
+            JwtSupport jwt
     ) {
         this.userRepository = userRepository;
         this.userOps = userOps;
         this.userMapper = userMapper;
         this.indexOps = indexOps;
         this.roleRepository = roleRepository;
+        this.jwt = jwt;
     }
 
     @Override
@@ -41,7 +49,7 @@ public class UserServicesImpl implements UserServices {
         ValidationUtils.ValidateEmail(user.email());
         Mono<String> passwordMono = Mono.fromCallable(() -> EncryptionUtils.encryptPassword(user.password()))
                 .subscribeOn(Schedulers.boundedElastic());
-        Mono<RoleEntity> roleMono = roleRepository.findRoleEntityByCode("CL02").switchIfEmpty(Mono
+        Mono<RoleEntity> roleMono = roleRepository.findRoleEntityByCode("CL01").switchIfEmpty(Mono
                 .error(new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Default role configuration error")));
         return Mono.zip(roleMono, passwordMono)
                 .map(tuple -> {
@@ -62,7 +70,7 @@ public class UserServicesImpl implements UserServices {
     }
 
     @Override
-    public Mono<Void> login(LoginUserDTO user) {
+    public Mono<WithTokenResponse> login(LoginUserDTO user) {
         ValidationUtils.ValidateEmail(user.email());
         return indexOps.opsForValue().get("email:" + user.email())
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("User not found or Email wrong")))
@@ -72,6 +80,10 @@ public class UserServicesImpl implements UserServices {
                     if(!EncryptionUtils.checkPassword(user.password(), res.password()))
                         throw new IllegalArgumentException("Wrong password!");
                 })
-                .then();
+                .map(u -> {
+                    BasicUserResponse newUser = userMapper.toBasicResponse(u);
+                    BearerToken token = jwt.generate(newUser.email());
+                    return new WithTokenResponse(token.getValue(), newUser);
+                });
     }
 }

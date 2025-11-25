@@ -3,6 +3,7 @@ package com.linkedreams.flowmind.infrastructure.controller;
 import com.linkedreams.flowmind.application.services.UserServices;
 import com.linkedreams.flowmind.infrastructure.dto.CreateUserDTO;
 import com.linkedreams.flowmind.infrastructure.dto.LoginUserDTO;
+import com.linkedreams.flowmind.infrastructure.dto.WithTokenResponse;
 import com.linkedreams.flowmind.infrastructure.models.Response;
 import com.linkedreams.flowmind.infrastructure.utils.ResponseUtil;
 import jakarta.validation.Valid;
@@ -20,13 +21,12 @@ public class Public {
     }
 
     @PostMapping("/create-user")
-    public Mono<ResponseEntity<Response<Void>>> createUser(@Valid @RequestBody CreateUserDTO user){
-        return userServices.createUser(user).then(ResponseUtil.created());
+    public Mono<ResponseEntity<Response<Void>>> createUser(@Valid @RequestBody Mono<CreateUserDTO> user){
+        return user.flatMap(userServices::createUser).then(Mono.just(ResponseUtil.created()));
     }
 
     @PostMapping("/login")
-    public Mono<ResponseEntity<Response<Void>>> login(@Valid @RequestBody LoginUserDTO user){
-        return userServices.login(user).then(ResponseUtil.ok());
+    public Mono<ResponseEntity<Response<WithTokenResponse>>> login(@Valid @RequestBody Mono<LoginUserDTO> user){
+        return user.flatMap(userServices::login).map(ResponseUtil::ok);
     }
-
 }
