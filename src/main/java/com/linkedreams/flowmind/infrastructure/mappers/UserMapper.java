@@ -18,7 +18,7 @@ public class UserMapper {
                 user.getPassword(),
                 user.getUsername(),
                 user.getPhoneNumber(),
-                "", "", "7"
+               "1"
         );
     }
     public User toRedis(UserMiddleProjection user){
@@ -30,19 +30,17 @@ public class UserMapper {
                 user.password(),
                 user.username(),
                 user.phone_number(),
-                user.role_name(),
-                user.role_code(),
                 user.role_value().toString()
         );
     }
-    public UserEntity toEntity(CreateUserDTO user, String encryptedPassword, Integer roleId){
+    public UserEntity toEntity(CreateUserDTO user, String encryptedPassword, Integer roleId, String username){
         return new UserEntity(
                 null,
                 user.firstName(),
                 user.lastName(),
                 user.email(),
                 encryptedPassword,
-                user.username(),
+                username.isBlank() ? user.username() : username,
                 user.phoneNumber(),
                 null,
                 roleId,
@@ -53,7 +51,8 @@ public class UserMapper {
     public BasicUserResponse toBasicResponse(User user){
         return new BasicUserResponse(
                 user.id(), user.firstName(), user.lastName(),
-                user.email(), user.username(), user.phoneNumber()
+                user.email(), user.username(), user.phoneNumber(),
+                Integer.parseInt(user.roleValue())
         );
     }
 }

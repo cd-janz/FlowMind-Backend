@@ -5,6 +5,7 @@ import com.linkedreams.flowmind.infrastructure.utils.ResponseUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -141,6 +142,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Response<Void>> handleAccessDeniedException(AccessDeniedException ex) {
         return ResponseUtil.error("Access denied", ex.getMessage(), HttpStatus.FORBIDDEN);
+    }
+    @ExceptionHandler(DuplicateKeyException.class)
+    public ResponseEntity<Response<Void>> handleDuplicateKeyException(DuplicateKeyException ex) {
+        String rawMessage = ex.getMessage();
+        String cleanMessage = "Duplicate entry detected";
+        Pattern pattern = Pattern.compile("duplicate key value violates unique constraint\\s+\".+?\"");
+        Matcher matcher = pattern.matcher(rawMessage);
+        if (matcher.find()) {
+            cleanMessage = matcher.group();
+        }
+        return ResponseUtil.error("Data conflict", cleanMessage, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(Exception.class)

@@ -77,16 +77,26 @@ public class JwtAuthenticationManager implements ReactiveAuthenticationManager {
 
     private List<SimpleGrantedAuthority> mapRoleToAuthorities(Integer roleValue){
         return switch (roleValue) {
-            case 7 -> // 7 (ADMIN)
-                    List.of(
-                            new SimpleGrantedAuthority("ROLE_ADMIN"),
-                            new SimpleGrantedAuthority("ROLE_MODERATOR"),
-                            new SimpleGrantedAuthority("ROLE_CLIENT")
-                    );
-            case 1 -> // 1 (CLIENT)
-                    List.of(
-                            new SimpleGrantedAuthority("ROLE_CLIENT")
-                    );
+            case 7 -> List.of(
+                    new SimpleGrantedAuthority("ROLE_EXECUTION"),
+                    new SimpleGrantedAuthority("ROLE_WRITE"),
+                    new SimpleGrantedAuthority("ROLE_READ")
+            );
+            case 6 -> List.of(
+                    new SimpleGrantedAuthority("ROLE_EXECUTION"),
+                    new SimpleGrantedAuthority("ROLE_WRITE")
+            );
+            case 5 -> List.of(
+                    new SimpleGrantedAuthority("ROLE_EXECUTION"),
+                    new SimpleGrantedAuthority("ROLE_READ")
+            );
+            case 4 -> List.of(new SimpleGrantedAuthority("ROLE_EXECUTION")); // BASE CASE EXECUTION
+            case 3 -> List.of(
+                    new SimpleGrantedAuthority("ROLE_WRITE"),
+                    new SimpleGrantedAuthority("ROLE_READ")
+            );
+            case 2 -> List.of(new SimpleGrantedAuthority("ROLE_WRITE")); // BASE CASE WRITE
+            case 1 -> List.of(new SimpleGrantedAuthority("ROLE_READ")); // BASE CASE READ
             default -> Collections.emptyList();
         };
     }

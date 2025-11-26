@@ -2,6 +2,7 @@ package com.linkedreams.flowmind.application.services.impl;
 
 import com.linkedreams.flowmind.application.services.UserServices;
 import com.linkedreams.flowmind.application.utils.EncryptionUtils;
+import com.linkedreams.flowmind.application.utils.GenerationUtils;
 import com.linkedreams.flowmind.application.utils.ValidationUtils;
 import com.linkedreams.flowmind.infrastructure.R2DBC.RoleEntity;
 import com.linkedreams.flowmind.infrastructure.configuration.JwtSupport;
@@ -14,7 +15,6 @@ import com.linkedreams.flowmind.infrastructure.redis.User;
 import com.linkedreams.flowmind.infrastructure.mappers.UserMapper;
 import com.linkedreams.flowmind.infrastructure.repositories.RoleRepository;
 import com.linkedreams.flowmind.infrastructure.repositories.UserRepository;
-import lombok.With;
 import org.springframework.data.redis.core.ReactiveRedisOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -55,7 +55,11 @@ public class UserServicesImpl implements UserServices {
                 .map(tuple -> {
                     RoleEntity role = tuple.getT1();
                     String encryptedPass = tuple.getT2();
-                    return userMapper.toEntity(user, encryptedPass, role.getId());
+                    String username = "";
+                    if(user.username() == null || user.username().isEmpty()){
+                        username = user.firstName().split(" ")[0] + GenerationUtils.generateCode(8);
+                    }
+                    return userMapper.toEntity(user, encryptedPass, role.getId(), username);
                 })
                 .flatMap(userRepository::save)
                 .flatMap(saved -> {
